@@ -1,0 +1,39 @@
+# Example /etc/nut/ups.conf entry for a 12V 400Ah LiFePO4 bank
+# monitored by a Victron SmartShunt.
+
+[victron]
+    driver = victron-vedirect
+    port = /dev/serial/by-id/REPLACE_WITH_YOUR_VICTRON_DEVICE
+    desc = "12V 400Ah LiFePO4 Battery Bank - Victron SmartShunt"
+
+    # SmartShunt cannot cut inverter/load power.
+    sdorder = -1
+
+    # Derive NUT LB from the standard battery.charge/runtime variables.
+    ignorelb
+    override.battery.charge.low = 15
+    override.battery.runtime.low = 300
+
+    default.battery.voltage.nominal = 12.8
+    # Rated/design capacity of four 100Ah batteries in parallel.
+    battery_capacity_ah = 400
+
+    # Optional: measured full-charge capacity after aging. If omitted, the
+    # driver assumes actual capacity equals the 400Ah design capacity.
+    # battery_actual_capacity_ah = 380
+    default.battery.type = LiFePO4
+
+    # SmartShunt has no direct utility-AC input indication. In this mode,
+    # discharging is treated as OB and charging/resting as OL.
+    status_mode = inferred
+    current_deadband = 0.5
+
+    # ups.load = battery-side discharge watts / this rating * 100.
+    # The driver also publishes ups.realpower and ups.realpower.nominal.
+    max_load_watts = 2000
+
+    # Optional troubleshooting telemetry:
+    # publish_raw
+
+    # Only for the VE.Direct-to-RS232 adapter (not normally needed for USB):
+    # rs232_power

@@ -1,0 +1,29 @@
+Validation performed before packaging v0.4.0
+==============================================
+1. VE.Direct parser/stream regression tests compiled with:
+   cc -std=c99 -Wall -Wextra -Werror
+
+2. Tests passed for:
+   - a valid binary-checksum VE.Direct frame
+   - rejection of a deliberately corrupted checksum
+   - two back-to-back frames in one byte stream
+   - a charging frame immediately followed by a discharging/outage frame
+   - a frame split across two simulated poll/read boundaries
+
+3. The full `victron-vedirect.c` plus parser passed a strict C99
+   `-Wall -Wextra -Werror` syntax/API-shape compile against a local stub of
+   the NUT 2.8.5 driver API.
+
+4. A simulated NUT driver receive-loop test passed with two complete VE.Direct
+   frames delivered in one `ser_get_buf()` read: a charging frame followed by
+   a discharging frame. The final published values were verified as:
+
+       battery.current = -18.500
+       ups.status       = OB
+
+   and the entire serial buffer was consumed. This directly exercises the
+   stale-frame/data-loss bug fixed in v0.4.0.
+
+5. Limitation: hardware validation against the user's physical SmartShunt is
+   still required. The bundle is experimental and intended for NUT 2.8.5 /
+   compatible 2.8.x source trees.
